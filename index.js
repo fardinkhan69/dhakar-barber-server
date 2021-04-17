@@ -27,34 +27,98 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 client.connect(err => {
   const servicesCollection = client.db(`${process.env.DB_NAME}`).collection("services");
   const testimonialsCollection = client.db(`${process.env.DB_NAME}`).collection("testimonials");
+  const bookingCollection = client.db(`${process.env.DB_NAME}`).collection("bookings");
 
-  app.get('/services',(req,res)=>{
+  app.get('/services', (req, res) => {
     servicesCollection.find()
-    .toArray((err,document)=>{
+      .toArray((err, document) => {
         res.send(document)
+      })
+  })
+
+
+  app.get('/testimonials', (req, res) => {
+    testimonialsCollection.find()
+      .toArray((err, document) => {
+        res.send(document)
+      })
+  })
+
+  app.get('/allBookings', (req, res)=>{
+    bookingCollection.find()
+    .toArray((err, document) => {
+      res.send(document)
     })
   })
 
 
-  app.get('/testimonials', (req, res)=>{
-    testimonialsCollection.find()
-      .toArray((err,document)=>{
-          res.send(document)
-      })
+  app.get('/booking/:id',(req, res)=>{
+    console.log(req.params.id);
+    servicesCollection.find({_id:ObjectId(req.params.id)})
+    .toArray((err,documents)=>{
+      res.send(documents[0])
+    })
+    
   })
 
- 
 
-  app.post('/addService',(req, res)=>{
-      const service = req.body;
-      console.log("new service",service)
-      servicesCollection.insertOne(service)
-      .then(result =>{
-          console.log(result);
-          res.send(result.insertedCount > 0)
+  app.get('/bookingList',(req, res)=>{
+    console.log(req.query.email)
+    bookingCollection.find({email:req.query.email})
+    .toArray((err,items)=>{
+      res.send(items)
+    })
+  })
+
+
+  app.post('/addService', (req, res) => {
+    const service = req.body;
+    console.log("new service", service)
+    servicesCollection.insertOne(service)
+      .then(result => {
+        console.log(result);
+        res.send(result.insertedCount > 0)
 
       })
 
+  })
+
+  app.post('/addTestimonial', (req, res) => {
+    const testimonial = req.body;
+    console.log("new service", testimonial)
+    testimonialsCollection.insertOne(testimonial)
+      .then(result => {
+        console.log(result);
+        res.send(result.insertedCount > 0)
+
+      })
+
+
+  })
+
+  
+
+  app.post('/booked',(req, res)=>{
+    const bookingDetail = req.body;
+    console.log("booking", bookingDetail)
+    bookingCollection.insertOne(bookingDetail)
+      .then(result => {
+        console.log(result);
+        res.send(result.insertedCount > 0)
+
+      })
+
+    
+  })
+
+
+  app.delete('/delete/:id', (req, res) => {
+    console.log(req.params.id);
+    servicesCollection.deleteOne({ _id: ObjectId(req.params.id) })
+      .then(result => {
+        console.log(result);
+        res.send(result.deletedCount > 0)
+      })
   })
   // perform actions on the collection object
   console.log("db connencted")
@@ -69,9 +133,9 @@ client.connect(err => {
 
 
 app.get('/', (req, res) => {
-    res.send('Hello World!')
-  })
-  
+  res.send('Hello World!')
+})
+
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
