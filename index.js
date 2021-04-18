@@ -28,6 +28,7 @@ client.connect(err => {
   const servicesCollection = client.db(`${process.env.DB_NAME}`).collection("services");
   const testimonialsCollection = client.db(`${process.env.DB_NAME}`).collection("testimonials");
   const bookingCollection = client.db(`${process.env.DB_NAME}`).collection("bookings");
+  const adminCollection = client.db(`${process.env.DB_NAME}`).collection("admin");
 
   app.get('/services', (req, res) => {
     servicesCollection.find()
@@ -44,30 +45,30 @@ client.connect(err => {
       })
   })
 
-  app.get('/allBookings', (req, res)=>{
+  app.get('/allBookings', (req, res) => {
     bookingCollection.find()
-    .toArray((err, document) => {
-      res.send(document)
-    })
+      .toArray((err, document) => {
+        res.send(document)
+      })
   })
 
 
-  app.get('/booking/:id',(req, res)=>{
+  app.get('/booking/:id', (req, res) => {
     console.log(req.params.id);
-    servicesCollection.find({_id:ObjectId(req.params.id)})
-    .toArray((err,documents)=>{
-      res.send(documents[0])
-    })
-    
+    servicesCollection.find({ _id: ObjectId(req.params.id) })
+      .toArray((err, documents) => {
+        res.send(documents[0])
+      })
+
   })
 
 
-  app.get('/bookingList',(req, res)=>{
+  app.get('/bookingList', (req, res) => {
     console.log(req.query.email)
-    bookingCollection.find({email:req.query.email})
-    .toArray((err,items)=>{
-      res.send(items)
-    })
+    bookingCollection.find({ email: req.query.email })
+      .toArray((err, items) => {
+        res.send(items)
+      })
   })
 
 
@@ -96,9 +97,9 @@ client.connect(err => {
 
   })
 
-  
 
-  app.post('/booked',(req, res)=>{
+
+  app.post('/booked', (req, res) => {
     const bookingDetail = req.body;
     console.log("booking", bookingDetail)
     bookingCollection.insertOne(bookingDetail)
@@ -108,9 +109,30 @@ client.connect(err => {
 
       })
 
-    
+
   })
 
+  app.post('/isAdmin', (req, res) => {
+    const email = req.body.email;
+    adminCollection.find({ email: email })
+      .toArray((err, admin) => {
+        res.send(admin.length > 0);
+      })
+  })
+
+
+  app.post('/addAdmin', (req, res) => {
+    const admin = req.body;
+    console.log("new service", admin)
+    adminCollection.insertOne(admin)
+      .then(result => {
+        console.log(result);
+        res.send(result.insertedCount > 0)
+
+      })
+
+
+  })
 
   app.delete('/delete/:id', (req, res) => {
     console.log(req.params.id);
