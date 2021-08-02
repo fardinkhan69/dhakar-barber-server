@@ -33,7 +33,7 @@ client.connect(err => {
   app.get('/services', (req, res) => {
     servicesCollection.find()
       .toArray((err, document) => {
-        res.send(document)
+        res.status(200).send(document)
       })
   })
 
@@ -41,14 +41,14 @@ client.connect(err => {
   app.get('/testimonials', (req, res) => {
     testimonialsCollection.find()
       .toArray((err, document) => {
-        res.send(document)
+        res.status(200).send(document)
       })
   })
 
   app.get('/allBookings', (req, res) => {
     bookingCollection.find()
       .toArray((err, document) => {
-        res.send(document)
+        res.status(200).send(document)
       })
   })
 
@@ -57,7 +57,7 @@ client.connect(err => {
     console.log(req.params.id);
     servicesCollection.find({ _id: ObjectId(req.params.id) })
       .toArray((err, documents) => {
-        res.send(documents[0])
+        res.status(200).send(documents[0])
       })
 
   })
@@ -67,7 +67,7 @@ client.connect(err => {
     console.log(req.query.email)
     bookingCollection.find({ email: req.query.email })
       .toArray((err, items) => {
-        res.send(items)
+        res.status(200).send(items)
       })
   })
 
@@ -78,7 +78,7 @@ client.connect(err => {
     servicesCollection.insertOne(service)
       .then(result => {
         console.log(result);
-        res.send(result.insertedCount > 0)
+        res.status(200).send(result.insertedCount > 0)
 
       })
 
@@ -90,7 +90,7 @@ client.connect(err => {
     testimonialsCollection.insertOne(testimonial)
       .then(result => {
         console.log(result);
-        res.send(result.insertedCount > 0)
+        res.status(200).send(result.insertedCount > 0)
 
       })
 
@@ -105,7 +105,7 @@ client.connect(err => {
     bookingCollection.insertOne(bookingDetail)
       .then(result => {
         console.log(result);
-        res.send(result.insertedCount > 0)
+        res.status(200).send(result.insertedCount > 0)
 
       })
 
@@ -116,7 +116,7 @@ client.connect(err => {
     const email = req.body.email;
     adminCollection.find({ email: email })
       .toArray((err, admin) => {
-        res.send(admin.length > 0);
+        res.status(200).send(admin.length > 0);
       })
   })
 
@@ -127,7 +127,7 @@ client.connect(err => {
     adminCollection.insertOne(admin)
       .then(result => {
         console.log(result);
-        res.send(result.insertedCount > 0)
+        res.status(200).send(result.insertedCount > 0)
 
       })
 
@@ -139,7 +139,7 @@ client.connect(err => {
     servicesCollection.deleteOne({ _id: ObjectId(req.params.id) })
       .then(result => {
         console.log(result);
-        res.send(result.deletedCount > 0)
+        res.status(200).send(result.deletedCount > 0)
       })
   })
   // perform actions on the collection object
@@ -155,7 +155,7 @@ client.connect(err => {
 
 
 app.get('/', (req, res) => {
-  res.send('Hello World!')
+  res.status(200).send('Hello World!')
 })
 
 
